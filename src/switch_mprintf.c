@@ -915,7 +915,7 @@ SWITCH_DECLARE(char *) switch_snprintfv(char *zBuf, int n, const char *zFormat, 
 {
 	char *z;
 	va_list ap;
-
+	// va_start宏允许后面访问可变参数
 	va_start(ap, zFormat);
 	z = base_vprintf(0, 0, zBuf, n, zFormat, ap);
 	va_end(ap);

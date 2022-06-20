@@ -1,0 +1,3 @@
+/home/ubuntu/work/mucfc/freeswitch/build/CMakeFiles/rebuild_cache.dir
+/home/ubuntu/work/mucfc/freeswitch/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/work/mucfc/freeswitch/build/CMakeFiles/freeswitch_la.dir

@@ -1,0 +1,237 @@
+[
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_apr.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_apr.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_apr.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_buffer.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_buffer.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_buffer.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_caller.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_caller.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_caller.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_channel.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_channel.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_channel.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_console.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_console.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_console.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_media_bug.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_media_bug.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_media_bug.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_timer.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_timer.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_timer.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_asr.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_asr.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_asr.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_event_hook.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_event_hook.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_event_hook.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_speech.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_speech.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_speech.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_memory.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_memory.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_memory.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_codec.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_codec.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_codec.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_file.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_file.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_file.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_hash.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_hash.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_hash.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_sqldb.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_sqldb.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_sqldb.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_session.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_session.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_session.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_directory.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_directory.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_directory.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_state_machine.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_state_machine.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_state_machine.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_io.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_io.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_io.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_rwlock.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_rwlock.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_rwlock.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_port_allocator.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_port_allocator.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_port_allocator.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_scheduler.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_scheduler.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_scheduler.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_core_db.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_core_db.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_core_db.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_dso.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_dso.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_dso.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_loadable_module.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_loadable_module.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_loadable_module.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_utils.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_utils.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_utils.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_event.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_event.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_event.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_resample.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_resample.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_resample.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_regex.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_regex.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_regex.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_rtp.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_rtp.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_rtp.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_ivr_bridge.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_bridge.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_bridge.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_ivr_originate.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_originate.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_originate.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_ivr_async.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_async.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_async.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_ivr_play_say.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_play_say.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_play_say.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_ivr_menu.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_menu.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_ivr_menu.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_ivr.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_ivr.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_ivr.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_stun.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_stun.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_stun.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_log.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_log.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_log.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_xml.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_xml.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_xml.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_config.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_config.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_config.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_time.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_time.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_time.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/g++   -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_cpp.cpp.o -c /home/ubuntu/work/mucfc/freeswitch/src/switch_cpp.cpp",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_cpp.cpp"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/g711.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/g711.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/g711.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/switch_pcm.c.o   -c /home/ubuntu/work/mucfc/freeswitch/src/switch_pcm.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/src/switch_pcm.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/home/ubuntu/work/mucfc/freeswitch/libs/libteletone/src/libteletone_detect.c.o   -c /home/ubuntu/work/mucfc/freeswitch/libs/libteletone/src/libteletone_detect.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/libs/libteletone/src/libteletone_detect.c"
+},
+{
+  "directory": "/home/ubuntu/work/mucfc/freeswitch/build",
+  "command": "/usr/bin/gcc  -I/home/ubuntu/work/mucfc/freeswitch/src/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/libresample/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/crypto/include -I/home/ubuntu/work/mucfc/freeswitch/src/../libs/srtp/include  -g   -o CMakeFiles/freeswitch_la.dir/home/ubuntu/work/mucfc/freeswitch/libs/libteletone/src/libteletone_generate.c.o   -c /home/ubuntu/work/mucfc/freeswitch/libs/libteletone/src/libteletone_generate.c",
+  "file": "/home/ubuntu/work/mucfc/freeswitch/libs/libteletone/src/libteletone_generate.c"
+}
+]

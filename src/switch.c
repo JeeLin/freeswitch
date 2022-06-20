@@ -52,6 +52,7 @@
 #include "private/switch_apr_pvt.h"
 #include "private/switch_core_pvt.h"
 
+// pidfile
 /* pid filename: Stores the process id of the freeswitch process */
 #define PIDFILE "freeswitch.pid"
 static char *pfile = PIDFILE;
@@ -59,6 +60,7 @@ static int system_ready = 0;
 
 /* Picky compiler */
 #ifdef __ICC
+// 告知编译器，停止167类型警告
 #pragma warning (disable:167)
 #endif
 
@@ -100,16 +102,19 @@ static void handle_SIGTERM(int sig)
 	return;
 }
 
+// 杀死后台进程
 /* kill a freeswitch process running in background mode */
 static int freeswitch_kill_background()
 {
 	FILE *f;					/* FILE handle to open the pid file */
 	char path[PATH_MAX] = "";		/* full path of the PID file */
 	pid_t pid = 0;				/* pid from the pid file */
-
+	// 设置所有配置，避免为空
 	/* set the globals so we can use the global paths. */
 	switch_core_set_globals();
 
+	// switch_snprintfv(char *zBuf, int n, const char *zFormat, ...)
+	// 将可变参数根据zFormat格式化后，赋值给zBuf
 	/* get the full path of the pid file. */
 	switch_snprintf(path, sizeof(path), "%s%s%s", SWITCH_GLOBAL_dirs.run_dir, SWITCH_PATH_SEPARATOR, pfile);
 
@@ -119,7 +124,7 @@ static int freeswitch_kill_background()
 		fprintf(stderr, "Cannot open pid file %s.\n", path);
 		return 255;
 	}
-
+	// (int *) (intptr_t) & pid, 用于将pid格式化为平台位数 32bit | 64bit
 	/* pull the pid from the file */
 	if (fscanf(f, "%d", (int *) (intptr_t) & pid) != 1) {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Unable to get the pid!\n");
@@ -480,22 +485,29 @@ static const char usage[] =
 static switch_bool_t is_option(const char *p)
 {
 	/* skip whitespaces */
+	// Char("9") tab(水平制表符)
+	// Char("10") 换行
+	// Char("11") tab(垂直制表符)
+	// Char("13") 回车 chr(13)&chr(10) 回车和换行的组合
+	// Char("32") 空格 SPACE
 	while ((*p == 13) || (*p == 10) || (*p == 9) || (*p == 32) || (*p == 11)) p++;
 	return (p[0] == '-');
 }
 
-
+// 程序入口
 /* the main application entry point */
 int main(int argc, char *argv[])
 {
 	char pid_path[PATH_MAX] = "";	/* full path to the pid file */
 	char pid_buffer[32] = "";	/* pid string */
 	char old_pid_buffer[32] = { 0 };	/* pid string */
+	// typedef 原类型 别名
 	switch_size_t pid_len, old_pid_len;
 	const char *err = NULL;		/* error value for return from freeswitch initialization */
 #ifndef WIN32
 	switch_bool_t nf = SWITCH_FALSE;				/* TRUE if we are running in nofork mode */
 	switch_bool_t do_wait = SWITCH_FALSE;
+	// 程序启动用户
 	char *runas_user = NULL;
 	char *runas_group = NULL;
 	switch_bool_t reincarnate = SWITCH_FALSE, reincarnate_reexec = SWITCH_FALSE;
@@ -513,11 +525,20 @@ int main(int argc, char *argv[])
 	char *local_argv[1024] = { 0 };
 	int local_argc = argc;
 	char *arg_argv[128] = { 0 };
+	// alt_dirs 自定义配置文件夹标识，以下配置使其+1 -conf -log -db
+	// alt_base 配置了prefix directory文件夹标识， log_set 配置了log文件夹标识，run_set 配置了runtime文件夹标识，
+	// do_kill 关闭标识
 	int alt_dirs = 0, alt_base = 0, log_set = 0, run_set = 0, do_kill = 0;
+	// priority settings
+	// hp rp 2
+	// lp -1
+	// np 1
 	int priority = 0;
 #if (defined(__SVR4) && defined(__sun))
 	switch_core_flag_t flags = SCF_USE_SQL | SCF_CALIBRATE_CLOCK | SCF_USE_CLOCK_RT;
 #else
+	// SCF_USE_SQL = 1<<0 , SCF_USE_AUTO_NAT = 1<<7 , SCF_USE_NAT_MAPPING = 1<<16 , SCF_CALIBRATE_CLOCK = 1<<9 ,
+	// SCF_USE_CLOCK_RT = 1<<17
 	switch_core_flag_t flags = SCF_USE_SQL | SCF_USE_AUTO_NAT | SCF_USE_NAT_MAPPING | SCF_CALIBRATE_CLOCK | SCF_USE_CLOCK_RT;
 #endif
 	int ret = 0;
@@ -534,6 +555,7 @@ int main(int argc, char *argv[])
 		local_argv[x] = argv[x];
 	}
 
+	// 获取环境变量中的配置
 	if ((opts = getenv("FREESWITCH_OPTS"))) {
 		strncpy(opts_str, opts, sizeof(opts_str) - 1);
 		i = switch_separate_string(opts_str, ' ', arg_argv, (sizeof(arg_argv) / sizeof(arg_argv[0])));
@@ -654,6 +676,7 @@ int main(int argc, char *argv[])
 			flags |= SCF_USE_WIN32_MONOTONIC;
 		}
 #else
+		// user
 		else if (!strcmp(local_argv[x], "-u")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -662,7 +685,7 @@ int main(int argc, char *argv[])
 			}
 			runas_user = local_argv[x];
 		}
-
+		// 用户组
 		else if (!strcmp(local_argv[x], "-g")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -671,24 +694,25 @@ int main(int argc, char *argv[])
 			}
 			runas_group = local_argv[x];
 		}
-
+		// no forking TODO
 		else if (!strcmp(local_argv[x], "-nf")) {
 			nf = SWITCH_TRUE;
 		}
-
+		// TODO
 		else if (!strcmp(local_argv[x], "-elegant-term")) {
 			elegant_term = SWITCH_TRUE;
 		}
-
+		// TODO restart the switch on an uncontrolled exit
 		else if (!strcmp(local_argv[x], "-reincarnate")) {
 			reincarnate = SWITCH_TRUE;
-		}
-		else if (!strcmp(local_argv[x], "-reincarnate-reexec")) {
+			// TODO run execv on a restart
+		} else if (!strcmp(local_argv[x], "-reincarnate-reexec")) {
 			reincarnate = SWITCH_TRUE;
 			reincarnate_reexec = SWITCH_TRUE;
 		}
 #endif
 #ifdef HAVE_SETRLIMIT
+		// debug 开启
 		else if (!strcmp(local_argv[x], "-core")) {
 			struct rlimit rlp;
 			memset(&rlp, 0, sizeof(rlp));
@@ -696,7 +720,7 @@ int main(int argc, char *argv[])
 			rlp.rlim_max = RLIM_INFINITY;
 			setrlimit(RLIMIT_CORE, &rlp);
 		}
-
+		// 64bit 允许内存浪费
 		else if (!strcmp(local_argv[x], "-waste")) {
 #ifndef FS_64BIT
 			fprintf(stderr, "WARNING: Wasting up to 8 megs of memory per thread.\n");
@@ -704,7 +728,7 @@ int main(int argc, char *argv[])
 			waste = SWITCH_TRUE;
 #endif
 		}
-
+		// TODO
 		else if (!strcmp(local_argv[x], "-no-auto-stack")) {
 #ifndef FS_64BIT
 			waste = SWITCH_TRUE;
@@ -715,51 +739,53 @@ int main(int argc, char *argv[])
 			fprintf(stdout, "FreeSWITCH version: %s (%s)\n", switch_version_full(), switch_version_revision_human());
 			exit(EXIT_SUCCESS);
 		}
-
+		// hp: enable normal priority settings TODO
+		// rp: enable high(realtime) priority settings TODO
 		else if (!strcmp(local_argv[x], "-hp") || !strcmp(local_argv[x], "-rp")) {
 			priority = 2;
 		}
-
+		// enable low priority settings TODO
 		else if (!strcmp(local_argv[x], "-lp")) {
 			priority = -1;
 		}
-
+		// enable normal priority settings TODO
 		else if (!strcmp(local_argv[x], "-np")) {
 			priority = 1;
 		}
-
+		// donot use SQL 1<<0
 		else if (!strcmp(local_argv[x], "-nosql")) {
 			flags &= ~SCF_USE_SQL;
 		}
-
+		// disable auto nat detection TODO 1<<7
 		else if (!strcmp(local_argv[x], "-nonat")) {
 			flags &= ~SCF_USE_AUTO_NAT;
 		}
-
+		// disable auto nat port mapping TODO 1<<16
 		else if (!strcmp(local_argv[x], "-nonatmap")) {
 			flags &= ~SCF_USE_NAT_MAPPING;
 		}
-
+		// Heavy Timer, possibly more accurate but at a cost TODO 1<<10
 		else if (!strcmp(local_argv[x], "-heavy-timer")) {
 			flags |= SCF_USE_HEAVY_TIMING;
 		}
-
+		// disable clock clock_realtime TODO 1<<11
 		else if (!strcmp(local_argv[x], "-nort")) {
 			flags &= ~SCF_USE_CLOCK_RT;
 		}
-
+		// 关闭时钟校订 1<<9
 		else if (!strcmp(local_argv[x], "-nocal")) {
 			flags &= ~SCF_CALIBRATE_CLOCK;
 		}
-
+		// run under valgrind TODO 1<<4
+		// valgrind @link https://www.jianshu.com/p/5a31d9aa1be2
 		else if (!strcmp(local_argv[x], "-vg")) {
 			flags |= SCF_VG;
 		}
-
+		// stop freeswtich
 		else if (!strcmp(local_argv[x], "-stop")) {
 			do_kill = SWITCH_TRUE;
 		}
-
+		// no console 并后台运行
 		else if (!strcmp(local_argv[x], "-nc")) {
 			nc = SWITCH_TRUE;
 		}
@@ -769,17 +795,18 @@ int main(int argc, char *argv[])
 			do_wait = SWITCH_TRUE;
 		}
 #endif
+		// 前台运行
 		else if (!strcmp(local_argv[x], "-c")) {
 			nc = SWITCH_FALSE;
 		}
-
+		// 指定配置文件夹
 		else if (!strcmp(local_argv[x], "-conf")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
 				fprintf(stderr, "When using -conf you must specify a config directory\n");
 				return 255;
 			}
-
+			// 终止符\/0 所以+1
 			SWITCH_GLOBAL_dirs.conf_dir = (char *) malloc(strlen(local_argv[x]) + 1);
 			if (!SWITCH_GLOBAL_dirs.conf_dir) {
 				fprintf(stderr, "Allocation error\n");
@@ -788,7 +815,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.conf_dir, local_argv[x]);
 			alt_dirs++;
 		}
-
+		// module配置文件夹
 		else if (!strcmp(local_argv[x], "-mod")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -803,7 +830,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.mod_dir, local_argv[x]);
 		}
-
+		// logfiles文件夹
 		else if (!strcmp(local_argv[x], "-log")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -820,7 +847,7 @@ int main(int argc, char *argv[])
 			alt_dirs++;
 			log_set = SWITCH_TRUE;
 		}
-
+		// runtime files文件夹
 		else if (!strcmp(local_argv[x], "-run")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -836,7 +863,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.run_dir, local_argv[x]);
 			run_set = SWITCH_TRUE;
 		}
-
+		// 内部数据库文件夹
 		else if (!strcmp(local_argv[x], "-db")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -852,7 +879,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.db_dir, local_argv[x]);
 			alt_dirs++;
 		}
-
+		// 脚本文件夹
 		else if (!strcmp(local_argv[x], "-scripts")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -867,7 +894,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.script_dir, local_argv[x]);
 		}
-
+		// htdocs文件夹 TODO
 		else if (!strcmp(local_argv[x], "-htdocs")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -882,7 +909,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.htdocs_dir, local_argv[x]);
 		}
-
+		// prefix directory TODO
 		else if (!strcmp(local_argv[x], "-base")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -898,7 +925,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.base_dir, local_argv[x]);
 			alt_base = 1;
 		}
-
+		// 临时文件文件夹
 		else if (!strcmp(local_argv[x], "-temp")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -913,7 +940,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.temp_dir, local_argv[x]);
 		}
-
+		// 语音邮件存储文件夹
 		else if (!strcmp(local_argv[x], "-storage")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -928,7 +955,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.storage_dir, local_argv[x]);
 		}
-
+		// 缓存文件夹
 		else if (!strcmp(local_argv[x], "-cache")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -943,7 +970,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.cache_dir, local_argv[x]);
 		}
-
+		// 录音文件夹 ？ TODO
 		else if (!strcmp(local_argv[x], "-recordings")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -958,7 +985,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.recordings_dir, local_argv[x]);
 		}
-
+		// 语法文件 TODO
 		else if (!strcmp(local_argv[x], "-grammar")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -973,7 +1000,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.grammar_dir, local_argv[x]);
 		}
-
+		// 证书文件夹
 		else if (!strcmp(local_argv[x], "-certs")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -988,7 +1015,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.certs_dir, local_argv[x]);
 		}
-
+		// 录音文件夹
 		else if (!strcmp(local_argv[x], "-sounds")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -1003,7 +1030,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.sounds_dir, local_argv[x]);
 		}
-
+		// 主配置文件名
 		else if (!strcmp(local_argv[x], "-cfgname")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -1026,7 +1053,7 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
-
+	// 配置了-log，未配置-run  run使用log文件夹
 	if (log_set && !run_set) {
 		SWITCH_GLOBAL_dirs.run_dir = (char *) malloc(strlen(SWITCH_GLOBAL_dirs.log_dir) + 1);
 		if (!SWITCH_GLOBAL_dirs.run_dir) {
@@ -1035,7 +1062,7 @@ int main(int argc, char *argv[])
 		}
 		strcpy(SWITCH_GLOBAL_dirs.run_dir, SWITCH_GLOBAL_dirs.log_dir);
 	}
-
+	// -stop 关闭标识
 	if (do_kill) {
 		return freeswitch_kill_background();
 	}

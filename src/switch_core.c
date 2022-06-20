@@ -649,6 +649,7 @@ SWITCH_DECLARE(void) switch_core_set_globals(void)
 	free(tmp);
 
 #else
+	// SWITCH_PREFIX_DIR = "." 默认为当前文件夹
 	char base_dir[1024] = SWITCH_PREFIX_DIR;
 #endif
 
@@ -658,18 +659,20 @@ SWITCH_DECLARE(void) switch_core_set_globals(void)
 	 *   --with-rundir
 	 *   --prefix
 	 */
-
+	// module文件夹
 	if (!SWITCH_GLOBAL_dirs.mod_dir && (SWITCH_GLOBAL_dirs.mod_dir = (char *) malloc(BUFSIZE))) {
+		// 基础文件夹非空则赋值为 ${base_dir}/mod
 		if (SWITCH_GLOBAL_dirs.base_dir)
 			switch_snprintf(SWITCH_GLOBAL_dirs.mod_dir, BUFSIZE, "%s%smod", SWITCH_GLOBAL_dirs.base_dir, SWITCH_PATH_SEPARATOR);
 		else
 #ifdef SWITCH_MOD_DIR
+			// 模块默认文件夹 /usr/local/freeswitch/mod
 			switch_snprintf(SWITCH_GLOBAL_dirs.mod_dir, BUFSIZE, "%s", SWITCH_MOD_DIR);
 #else
 			switch_snprintf(SWITCH_GLOBAL_dirs.mod_dir, BUFSIZE, "%s%smod", base_dir, SWITCH_PATH_SEPARATOR);
 #endif
 	}
-
+	// lib依赖文件夹
 	if (!SWITCH_GLOBAL_dirs.lib_dir && (SWITCH_GLOBAL_dirs.lib_dir = (char *) malloc(BUFSIZE))) {
 		if (SWITCH_GLOBAL_dirs.base_dir)
 			switch_snprintf(SWITCH_GLOBAL_dirs.lib_dir, BUFSIZE, "%s%slib", SWITCH_GLOBAL_dirs.base_dir, SWITCH_PATH_SEPARATOR);

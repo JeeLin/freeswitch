@@ -124,7 +124,9 @@ static int freeswitch_kill_background()
 		fprintf(stderr, "Cannot open pid file %s.\n", path);
 		return 255;
 	}
-	// (int *) (intptr_t) & pid, 用于将pid格式化为平台位数 32bit | 64bit
+	// (int *) (intptr_t) & pid, 经过变换返回pid的指针位置
+	// intptr_t 和 uintptr_t 类型用来存放指针地址。
+	// 它们提供了一种可移植且安全的方法声明指针，而且和系统中使用的指针长度相同，对于把指针转化成整数形式来说很有用
 	/* pull the pid from the file */
 	if (fscanf(f, "%d", (int *) (intptr_t) & pid) != 1) {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Unable to get the pid!\n");
@@ -255,7 +257,8 @@ static int check_fd(int fd, int ms)
 
 	return r;
 }
-
+// 进程处理
+// --ncwait时fds { 0,0 } 否则 NULL
 static void daemonize(int *fds)
 {
 	int fd;
@@ -263,6 +266,8 @@ static void daemonize(int *fds)
 	unsigned int sanity = 60;
 
 	if (!fds) {
+		// fork 复制当前进程创建子进程，主子两个进程都从此处开始执行
+		// 主进程返回值为子进程的pid，子进程返回为0，失败<0
 		switch (fork()) {
 		case 0:		/* child process */
 			break;
@@ -271,19 +276,22 @@ static void daemonize(int *fds)
 			exit(EXIT_SUCCESS);
 			break;
 		default:	/* parent process */
+			// 主进程退出
 			exit(EXIT_SUCCESS);
 		}
-
+		// 子进程不再受主进程停止影响
+		// https://blog.csdn.net/smcnjyddx0623/article/details/52336294
 		if (setsid() < 0) {
 			fprintf(stderr, "Error Backgrounding (setsid)! %d - %s\n", errno, strerror(errno));
 			exit(EXIT_SUCCESS);
 		}
 	}
-
+	// 以上到此只剩一个进程，再次进程分裂
 	pid = switch_fork();
 
 	switch (pid) {
 	case 0:		/* child process */
+		// 子进程关闭读端fds[0]
 		if (fds) {
 			close(fds[0]);
 		}
@@ -297,9 +305,9 @@ static void daemonize(int *fds)
 
 		if (fds) {
 			char *o;
-
+			// 父进程关闭写端fds[1]
 			close(fds[1]);
-
+			// TODO 这个配置干啥的
 			if ((o = getenv("FREESWITCH_BG_TIMEOUT"))) {
 				int tmp = atoi(o);
 				if (tmp > 0) {
@@ -370,7 +378,9 @@ static void reincarnate_handle_sigterm (int sig) {
 static void reincarnate_protect(char **argv) {
 	int i; struct sigaction sa, sa_dfl, sa4_prev, sa15_prev, sa17_prev;
 	memset(&sa, 0, sizeof(sa)); memset(&sa_dfl, 0, sizeof(sa_dfl));
+	// 指定信号量处理函数
 	sa.sa_handler = reincarnate_handle_sigterm;
+	// SIG_DFL 默认信号处理方法
 	sa_dfl.sa_handler = SIG_DFL;
  refork:
 	if ((i=fork())) { /* parent */
@@ -420,7 +430,76 @@ static void reincarnate_protect(char **argv) {
 }
 
 #endif
+/*
+（1）-nf 不允许Fork新进程
 
+（2）-u [user] 启动后以非root用户user身份运行
+
+（3）-g [group] 启动后以非root组group身份运行
+
+（4）-version 显示版本信息
+
+（5）-waste 允许浪费内存地址空间，FreeSWITCH仅需240KB的栈空间，你可以使用ulimit -s
+240限制栈空间使用，或使用该选项忽略警告信息
+
+（6）-core 出错时进行内核转储
+
+（7）-rp 开启高优先级（实时）设置
+
+（8）-lp 开启低优先级设置
+
+（9）-np 普通优先级
+
+（10）-vg 在valgrind下运行，调试内存泄漏时使用
+
+（11）-nosql 不使用SQL，show channels类的命令将不能显示结果
+
+（12）-heavy-timer 更精确的时钟，可能会更精确，但对系统要求更高
+
+（13）-nonat
+如果路由器支持uPnP或NAT-PMP，则FreeSWITCH可以自动解决NAT穿越问题。如果路由器不支持，则该选项可以使启动更快。
+
+（14）-nocal
+关闭时钟核准。FreeSWITCH理想的运行环境是1000Hz的内核时钟。如果你在内核时钟小于1000Hz或在虚拟机上，可以尝试关闭该选项
+
+（15）-nort 关闭实时时钟
+
+（16）-stop 关闭FreeSWITCH，它会在run目录中查找PID文件
+
+（17）-nc 启动到后台模式，没有控制台
+
+（18）-ncwait 后台模式，等待系统完全初始化完毕之后再退出父进程，隐含“-nc”选项
+
+（19）-c 启动到控制台，默认Options to control location of files
+
+（20）-base [confdir] 指定其他的基准目录，在配置文件中使用$${base}
+
+（21）-conf [confdir] 指定其他的配置文件所在目录，需与-log、-db合用
+
+（22）-log [logdir] 指定其他的日志目录
+
+（23）-run [rundir] 指定其他存放PID文件的运行目录
+
+（24）-db [dbdir] 指定其他数据库的目录
+
+（25）-mod [moddir] 指定其他模块目录
+
+（26）-htdocs [htdocsdir] 指定其他HTTP根目录
+
+（27）-scripts [scriptsdir] 指定其他脚本目录
+
+（28）-temp [directory] 指定其他临时文件目录
+
+（29）-grammar [directory] 指定其他语法目录
+
+（30）-certs [directory] 指定其他SSL证书路径
+
+（31）-recordings [directory] 指定其他录音目录
+
+（32）-storage [directory] 指定其他存储目录（语音信箱等）
+
+（33）-sounds [directory] 指定其他声音文件目录
+*/
 static const char usage[] =
 	"Usage: freeswitch [OPTIONS]\n\n"
 	"These are the optional arguments you can pass to freeswitch:\n"
@@ -505,18 +584,26 @@ int main(int argc, char *argv[])
 	switch_size_t pid_len, old_pid_len;
 	const char *err = NULL;		/* error value for return from freeswitch initialization */
 #ifndef WIN32
+	// 是否不允许Fork新进程
 	switch_bool_t nf = SWITCH_FALSE;				/* TRUE if we are running in nofork mode */
+	// 系统完全初始化完毕之后再退出父进程
+	// TODO 有什么意义
 	switch_bool_t do_wait = SWITCH_FALSE;
-	// 程序启动用户
+	// 启动后以非root用户user身份运行
 	char *runas_user = NULL;
+	// 启动后以非root组group身份运行
 	char *runas_group = NULL;
+	// -reincarnate -reincarnate-reexec
 	switch_bool_t reincarnate = SWITCH_FALSE, reincarnate_reexec = SWITCH_FALSE;
+	// TODO 主子进程
 	int fds[2] = { 0, 0 };
 #else
 	const switch_bool_t nf = SWITCH_TRUE;		     /* On Windows, force nf to true*/
 	switch_bool_t win32_service = SWITCH_FALSE;
 #endif
+	// 后台运行
 	switch_bool_t nc = SWITCH_FALSE;				/* TRUE if we are running in noconsole mode */
+	// -elegant-term TODO
 	switch_bool_t elegant_term = SWITCH_FALSE;
 	pid_t pid = 0;
 	int i, x;
@@ -526,10 +613,10 @@ int main(int argc, char *argv[])
 	int local_argc = argc;
 	char *arg_argv[128] = { 0 };
 	// alt_dirs 自定义配置文件夹标识，以下配置使其+1 -conf -log -db
-	// alt_base 配置了prefix directory文件夹标识， log_set 配置了log文件夹标识，run_set 配置了runtime文件夹标识，
+	// alt_base 配置了prefix directory文件夹标识 --base， log_set 配置了log文件夹标识，run_set 配置了runtime文件夹标识，
 	// do_kill 关闭标识
 	int alt_dirs = 0, alt_base = 0, log_set = 0, run_set = 0, do_kill = 0;
-	// priority settings
+	// 优先级设置
 	// hp rp 2
 	// lp -1
 	// np 1
@@ -547,6 +634,8 @@ int main(int argc, char *argv[])
 	switch_memory_pool_t *pool = NULL;
 #ifdef HAVE_SETRLIMIT
 #ifndef FS_64BIT
+	// 允许浪费内存地址空间，FreeSWITCH仅需240KB的栈空间，你可以使用ulimit -s
+	// 240限制栈空间使用，或使用该选项忽略警告信息
 	switch_bool_t waste = SWITCH_FALSE;
 #endif
 #endif
@@ -676,7 +765,6 @@ int main(int argc, char *argv[])
 			flags |= SCF_USE_WIN32_MONOTONIC;
 		}
 #else
-		// user
 		else if (!strcmp(local_argv[x], "-u")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -694,7 +782,7 @@ int main(int argc, char *argv[])
 			}
 			runas_group = local_argv[x];
 		}
-		// no forking TODO
+		// no forking 不允许Fork新进程
 		else if (!strcmp(local_argv[x], "-nf")) {
 			nf = SWITCH_TRUE;
 		}
@@ -712,7 +800,7 @@ int main(int argc, char *argv[])
 		}
 #endif
 #ifdef HAVE_SETRLIMIT
-		// debug 开启
+		// 出错时进行内核转储
 		else if (!strcmp(local_argv[x], "-core")) {
 			struct rlimit rlp;
 			memset(&rlp, 0, sizeof(rlp));
@@ -720,7 +808,7 @@ int main(int argc, char *argv[])
 			rlp.rlim_max = RLIM_INFINITY;
 			setrlimit(RLIMIT_CORE, &rlp);
 		}
-		// 64bit 允许内存浪费
+		// 允许浪费内存地址空间
 		else if (!strcmp(local_argv[x], "-waste")) {
 #ifndef FS_64BIT
 			fprintf(stderr, "WARNING: Wasting up to 8 megs of memory per thread.\n");
@@ -739,24 +827,25 @@ int main(int argc, char *argv[])
 			fprintf(stdout, "FreeSWITCH version: %s (%s)\n", switch_version_full(), switch_version_revision_human());
 			exit(EXIT_SUCCESS);
 		}
-		// hp: enable normal priority settings TODO
-		// rp: enable high(realtime) priority settings TODO
+		// 开启高优先级（实时）设置
 		else if (!strcmp(local_argv[x], "-hp") || !strcmp(local_argv[x], "-rp")) {
 			priority = 2;
 		}
-		// enable low priority settings TODO
+		// 开启低优先级设置
 		else if (!strcmp(local_argv[x], "-lp")) {
 			priority = -1;
 		}
-		// enable normal priority settings TODO
+		// 普通优先级
 		else if (!strcmp(local_argv[x], "-np")) {
 			priority = 1;
 		}
 		// donot use SQL 1<<0
+		// 不使用SQL，show channels类的命令将不能显示结果
 		else if (!strcmp(local_argv[x], "-nosql")) {
 			flags &= ~SCF_USE_SQL;
 		}
-		// disable auto nat detection TODO 1<<7
+		// disable auto nat detection  1<<7
+		// 如果路由器支持uPnP或NAT-PMP，则FreeSWITCH可以自动解决NAT穿越问题。如果路由器不支持，则该选项可以使启动更快。
 		else if (!strcmp(local_argv[x], "-nonat")) {
 			flags &= ~SCF_USE_AUTO_NAT;
 		}
@@ -764,42 +853,44 @@ int main(int argc, char *argv[])
 		else if (!strcmp(local_argv[x], "-nonatmap")) {
 			flags &= ~SCF_USE_NAT_MAPPING;
 		}
-		// Heavy Timer, possibly more accurate but at a cost TODO 1<<10
+		// 更精确的时钟，可能会更精确，但对系统要求更高 1<<10
 		else if (!strcmp(local_argv[x], "-heavy-timer")) {
 			flags |= SCF_USE_HEAVY_TIMING;
 		}
-		// disable clock clock_realtime TODO 1<<11
+		// 关闭实时时钟 1<<11
 		else if (!strcmp(local_argv[x], "-nort")) {
 			flags &= ~SCF_USE_CLOCK_RT;
 		}
-		// 关闭时钟校订 1<<9
+		// 关闭时钟核准 1<<9
+		// FreeSWITCH理想的运行环境是1000Hz的内核时钟。如果你在内核时钟小于1000Hz或在虚拟机上，可以尝试关闭该选项
 		else if (!strcmp(local_argv[x], "-nocal")) {
 			flags &= ~SCF_CALIBRATE_CLOCK;
 		}
-		// run under valgrind TODO 1<<4
+		// 在valgrind下运行，调试内存泄漏时使用 1<<4
 		// valgrind @link https://www.jianshu.com/p/5a31d9aa1be2
 		else if (!strcmp(local_argv[x], "-vg")) {
 			flags |= SCF_VG;
 		}
-		// stop freeswtich
+		// 关闭FreeSWITCH，它会在run目录中查找PID文件
 		else if (!strcmp(local_argv[x], "-stop")) {
 			do_kill = SWITCH_TRUE;
 		}
-		// no console 并后台运行
+		// no console 启动到后台模式，没有控制台
 		else if (!strcmp(local_argv[x], "-nc")) {
 			nc = SWITCH_TRUE;
 		}
 #ifndef WIN32
+		// 后台模式，等待系统完全初始化完毕之后再退出父进程，隐含“-nc”选项
 		else if (!strcmp(local_argv[x], "-ncwait")) {
 			nc = SWITCH_TRUE;
 			do_wait = SWITCH_TRUE;
 		}
 #endif
-		// 前台运行
+		// 启动到控制台，默认Options to control location of files
 		else if (!strcmp(local_argv[x], "-c")) {
 			nc = SWITCH_FALSE;
 		}
-		// 指定配置文件夹
+		// 指定其他的配置文件所在目录，需与-log、-db合用
 		else if (!strcmp(local_argv[x], "-conf")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -815,7 +906,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.conf_dir, local_argv[x]);
 			alt_dirs++;
 		}
-		// module配置文件夹
+		// 指定其他模块目录
 		else if (!strcmp(local_argv[x], "-mod")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -830,7 +921,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.mod_dir, local_argv[x]);
 		}
-		// logfiles文件夹
+		// 指定其他的日志目录
 		else if (!strcmp(local_argv[x], "-log")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -847,7 +938,7 @@ int main(int argc, char *argv[])
 			alt_dirs++;
 			log_set = SWITCH_TRUE;
 		}
-		// runtime files文件夹
+		// 指定其他存放PID文件的运行目录
 		else if (!strcmp(local_argv[x], "-run")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -863,7 +954,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.run_dir, local_argv[x]);
 			run_set = SWITCH_TRUE;
 		}
-		// 内部数据库文件夹
+		// 指定其他数据库的目录
 		else if (!strcmp(local_argv[x], "-db")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -894,7 +985,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.script_dir, local_argv[x]);
 		}
-		// htdocs文件夹 TODO
+		// 指定其他HTTP根目录 TODO
 		else if (!strcmp(local_argv[x], "-htdocs")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -909,7 +1000,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.htdocs_dir, local_argv[x]);
 		}
-		// prefix directory TODO
+		// 指定其他的基准目录，在配置文件中使用$${base}
 		else if (!strcmp(local_argv[x], "-base")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -925,7 +1016,7 @@ int main(int argc, char *argv[])
 			strcpy(SWITCH_GLOBAL_dirs.base_dir, local_argv[x]);
 			alt_base = 1;
 		}
-		// 临时文件文件夹
+		// 指定其他临时文件目录
 		else if (!strcmp(local_argv[x], "-temp")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -940,7 +1031,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.temp_dir, local_argv[x]);
 		}
-		// 语音邮件存储文件夹
+		// 指定其他存储目录（语音信箱等）
 		else if (!strcmp(local_argv[x], "-storage")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -970,7 +1061,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.cache_dir, local_argv[x]);
 		}
-		// 录音文件夹 ？ TODO
+		// 指定其他录音目录
 		else if (!strcmp(local_argv[x], "-recordings")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -985,7 +1076,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.recordings_dir, local_argv[x]);
 		}
-		// 语法文件 TODO
+		// 指定其他语法目录
 		else if (!strcmp(local_argv[x], "-grammar")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -1000,7 +1091,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.grammar_dir, local_argv[x]);
 		}
-		// 证书文件夹
+		// 指定其他SSL证书路径
 		else if (!strcmp(local_argv[x], "-certs")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -1015,7 +1106,7 @@ int main(int argc, char *argv[])
 			}
 			strcpy(SWITCH_GLOBAL_dirs.certs_dir, local_argv[x]);
 		}
-		// 录音文件夹
+		// 指定其他声音文件目录
 		else if (!strcmp(local_argv[x], "-sounds")) {
 			x++;
 			if (switch_strlen_zero(local_argv[x]) || is_option(local_argv[x])) {
@@ -1066,7 +1157,7 @@ int main(int argc, char *argv[])
 	if (do_kill) {
 		return freeswitch_kill_background();
 	}
-
+	// TODO 到底怎么调用的apr_initialize
 	if (apr_initialize() != SWITCH_STATUS_SUCCESS) {
 		fprintf(stderr, "FATAL ERROR! Could not initialize APR\n");
 		return 255;
@@ -1079,6 +1170,7 @@ int main(int argc, char *argv[])
 
 #ifndef FS_64BIT
 #if defined(HAVE_SETRLIMIT) && !defined(__sun)
+	// SCF_VG: run under valgrind
 	if (!waste && !(flags & SCF_VG)) {
 		struct rlimit rlp;
 
@@ -1106,7 +1198,9 @@ int main(int argc, char *argv[])
 	}
 #endif
 #endif
+	// 使用handle_SIGILL函数处理非法指令
 	signal(SIGILL, handle_SIGILL);
+	// 指定函数处理终止请求
 	if (elegant_term) {
 		signal(SIGTERM, handle_SIGTERM);
 	} else {
@@ -1115,6 +1209,10 @@ int main(int argc, char *argv[])
 
 #ifndef WIN32
 	if (do_wait) {
+		// pipe 建立fds[1]到fds[0]的单向管道
+		// 成功0，失败-1
+		// fds会赋值为管道两端的文件描述符
+		// pipe fork实现进程通信：https://www.cnblogs.com/MrListening/p/5858358.html
 		if (pipe(fds)) {
 			fprintf(stderr, "System Error!\n");
 			exit(-1);
@@ -1127,6 +1225,7 @@ int main(int argc, char *argv[])
 		FreeConsole();
 #else
 		if (!nf) {
+			// 守护进程及通信建立
 			daemonize(do_wait ? fds : NULL);
 		}
 #endif

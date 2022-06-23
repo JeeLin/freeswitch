@@ -908,7 +908,7 @@ SWITCH_DECLARE(void) switch_core_set_globals(void)
 	switch_assert(SWITCH_GLOBAL_filenames.conf_name);
 }
 
-
+// 设置进程权限
 SWITCH_DECLARE(int32_t) switch_core_set_process_privileges(void)
 {
 #ifdef SOLARIS_PRIVILEGES
@@ -960,7 +960,7 @@ SWITCH_DECLARE(int32_t) set_low_priority(void)
 		return -1;
 	}
 #endif
-
+// TODO
 #ifdef HAVE_SETPRIORITY
 	/*
 	 * setpriority() works on FreeBSD (6.2), nice() doesn't
@@ -2700,7 +2700,7 @@ SWITCH_DECLARE(uint32_t) switch_core_max_audio_channels(uint32_t limit)
 
 	return runtime.max_audio_channels;
 }
-
+// core接受信号
 SWITCH_DECLARE(int32_t) switch_core_session_ctl(switch_session_ctl_t cmd, void *val)
 {
 	int *intval = (int *) val;
@@ -3335,7 +3335,7 @@ SWITCH_DECLARE(pid_t) switch_fork(void)
 SWITCH_DECLARE(pid_t) switch_fork(void)
 {
 	int i = fork();
-
+	// 减低子进程优先度
 	if (!i) {
 		set_low_priority();
 	}

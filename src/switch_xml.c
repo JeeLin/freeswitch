@@ -181,13 +181,18 @@ static void preprocess_stun_set(char *keyval)
 
 static void preprocess_env_set(char *keyval)
 {
+	// keyval "x=$PATH"
 	char *key = keyval;
+	// val    "=$PATH"
 	char *val = strchr(keyval, '=');
 
 	if (key && val) {
+		// key    "x"
+		// val    "$PATH"
 		*val++ = '\0';
 
 		if (*val++ == '$') {
+			// val    "PATH"
 			char *data = getenv(val);
 
 			if (data) {
@@ -1324,7 +1329,7 @@ static FILE *preprocess_exec(const char *cwd, const char *command, FILE *write_f
  	}
 #else
 	int fds[2], pid = 0;
-
+	// 异步处理
 	if (pipe(fds)) {
 		goto end;
 	} else {					/* good to go */
@@ -1389,6 +1394,7 @@ static FILE *preprocess_glob(const char *cwd, const char *pattern, FILE *write_f
 		if ((e = strrchr(dir_path, *SWITCH_PATH_SEPARATOR))) {
 			*e = '\0';
 		}
+		// 嵌套预编译
 		if (preprocess(dir_path, glob_data.gl_pathv[n], write_fd, rlevel) < 0) {
 			if (rlevel > 100) {
 				switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Error including %s (Maximum recursion limit reached)\n", pattern);
@@ -1404,7 +1410,8 @@ static FILE *preprocess_glob(const char *cwd, const char *pattern, FILE *write_f
 
 	return write_fd;
 }
-
+// 预编译xml文件
+// rlevel 嵌套编译层数
 static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rlevel)
 {
 	FILE *read_fd = NULL;
@@ -1467,11 +1474,17 @@ static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rle
 				continue;
 			}
 		}
-
+		// <X-PRE-PROCESS cmd="include" data="vars.xml"/>
+		// <X-PRE-PROCESS cmd="set" data="external_auth_calls=false"/>
+		// <X-PRE-PROCESS cmd="exec-set" data="test=echo 1234"/>
+		// 预处理标签
+		// switch_stristr 无视大小写
 		if ((tcmd = (char *) switch_stristr("X-pre-process", bp))) {
 			if (*(tcmd - 1) != '<') {
 				continue;
 			}
+			// strstr 首次出现位置
+			// e 是新对象地址
 			if ((e = strstr(tcmd, "/>"))) {
 				e += 2;
 				*e = '\0';
@@ -1491,7 +1504,7 @@ static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rle
 			if (!(tcmd = (char *) switch_stristr("\"", tcmd))) {
 				continue;
 			}
-
+			// cmd
 			tcmd++;
 
 
@@ -1510,7 +1523,7 @@ static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rle
 			if (!(targ = (char *) switch_stristr("\"", targ))) {
 				continue;
 			}
-
+			// data
 			targ++;
 
 			if ((e = strchr(targ, '"'))) {
@@ -1531,20 +1544,24 @@ static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rle
 						*ve-- = '\0';
 					}
 				}
-
-				if (val) {
-					switch_core_set_variable(name, val);
-				}
-
+				// 数据放入header
+				// key: external_auth_calls  value: false
+				if (val) { switch_core_set_variable(name, val); }
 			} else if (!strcasecmp(tcmd, "exec-set")) {
+				// tcmd执行后放入  test=echo 1234
+				// key: test  value: 1234
 				preprocess_exec_set(targ);
 			} else if (!strcasecmp(tcmd, "stun-set")) {
+				// stun网络协议相关配置修改
 				preprocess_stun_set(targ);
 			} else if (!strcasecmp(tcmd, "env-set")) {
+				// value可以读取环境变量 ${}
 				preprocess_env_set(targ);
 			} else if (!strcasecmp(tcmd, "include")) {
+				// 嵌套编译
 				preprocess_glob(cwd, targ, write_fd, rlevel + 1);
 			} else if (!strcasecmp(tcmd, "exec")) {
+				// 异步执行命令
 				preprocess_exec(cwd, targ, write_fd, rlevel + 1);
 			}
 
@@ -1667,6 +1684,7 @@ SWITCH_DECLARE(switch_xml_t) switch_xml_parse_file(const char *file)
 	abs = strrchr(file, '/');
 	absw = strrchr(file, '\\');
 	if (abs || absw) {
+		// 这两个值指向file后的某一个字节
 		abs > absw ? abs++ : (abs = ++absw);
 	} else {
 		abs = file;
@@ -1681,7 +1699,7 @@ SWITCH_DECLARE(switch_xml_t) switch_xml_parse_file(const char *file)
 	if (!(new_file_tmp = switch_mprintf("%s%s%s.fsxml.tmp", SWITCH_GLOBAL_dirs.log_dir, SWITCH_PATH_SEPARATOR, abs))) {
 		goto done;
 	}
-
+	// 创建或覆盖文件
 	if ((write_fd = fopen(new_file_tmp, "w+")) == NULL) {
 		goto done;
 	}
@@ -2372,12 +2390,13 @@ SWITCH_DECLARE_NONSTD(switch_xml_t) __switch_xml_open_root(uint8_t reload, const
 	switch_xml_t new_main, r = NULL;
 
 	if (MAIN_XML_ROOT) {
+		// TODO xml reload
 		if (!reload) {
 			r = switch_xml_root();
 			goto done;
 		}
 	}
-
+	// conf_name "freeswitch.xml"
 	switch_snprintf(path_buf, sizeof(path_buf), "%s%s%s", SWITCH_GLOBAL_dirs.conf_dir, SWITCH_PATH_SEPARATOR, SWITCH_GLOBAL_filenames.conf_name);
 	if ((new_main = switch_xml_parse_file(path_buf))) {
 		*err = switch_xml_error(new_main);
@@ -2417,7 +2436,7 @@ SWITCH_DECLARE(switch_status_t) switch_xml_reload(const char **err)
 
 	return SWITCH_STATUS_GENERR;
 }
-
+// 配置初始化
 SWITCH_DECLARE(switch_status_t) switch_xml_init(switch_memory_pool_t *pool, const char **err)
 {
 	switch_xml_t xml;

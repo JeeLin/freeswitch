@@ -1647,7 +1647,7 @@ SWITCH_DECLARE(switch_bool_t) switch_is_leading_number(const char *str)
 
 	return r;
 }
-
+// 计算str中instr的首次出现位置，无视大小写差异
 SWITCH_DECLARE(const char *) switch_stristr(const char *instr, const char *str)
 {
 /*

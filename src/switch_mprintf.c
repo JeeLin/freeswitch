@@ -221,6 +221,7 @@ static int et_getdigit(LONGDOUBLE_TYPE * val, int *cnt)
 ** seems to make a big difference in determining how fast this beast
 ** will run.
 */
+// TODO 占位符解析
 static int vxprintf(void (*func) (void *, const char *, int),	/* Consumer of text */
 					void *arg,	/* First argument to the consumer */
 					int useExtended,	/* Allow extended %-conversions */
@@ -266,6 +267,7 @@ static int vxprintf(void (*func) (void *, const char *, int),	/* Consumer of tex
 	func(arg, "", 0);
 	count = length = 0;
 	bufpt = 0;
+	// 解析printf占位符
 	for (; (c = (*fmt)) != 0; ++fmt) {
 		if (c != '%') {
 			int amt;
@@ -844,6 +846,7 @@ static void mout(void *arg, const char *zNewText, int nNewChar)
 ** This routine is a wrapper around xprintf() that invokes mout() as
 ** the consumer.
 */
+// 返回拼接字符串
 static char *base_vprintf(void *(*xRealloc) (void *, int),	/* Routine to realloc memory. May be NULL */
 						  int useInternal,	/* Use internal %-conversions if true */
 						  char *zInitBuf,	/* Initially write here, before mallocing */

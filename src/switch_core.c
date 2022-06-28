@@ -1914,7 +1914,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 		*err = "FATAL ERROR! Could not initialize SQLite\n";
 		return SWITCH_STATUS_MEMERR;
 	}
-
+	// main 已初始化，一定成功
 	/* INIT APR and Create the pool context */
 	if (apr_initialize() != SWITCH_STATUS_SUCCESS) {
 		*err = "FATAL ERROR! Could not initialize APR\n";
@@ -2006,7 +2006,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 #endif
 	switch_console_init(runtime.memory_pool);
 	switch_event_init(runtime.memory_pool);
-	switch_channel_gloobal_init(runtime.memory_pool);
+	switch_channel_global_init(runtime.memory_pool);
 
 	if (switch_xml_init(runtime.memory_pool, err) != SWITCH_STATUS_SUCCESS) {
 		/* allow missing configuration if MINIMAL */
@@ -2506,7 +2506,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init_and_modload(switch_core_flag_t 
 	const char *use = NULL;
 #include "cc.h"
 
-
+	// 核心初始化
 	if (switch_core_init(flags, console, err) != SWITCH_STATUS_SUCCESS) {
 		return SWITCH_STATUS_GENERR;
 	}

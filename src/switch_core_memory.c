@@ -572,7 +572,7 @@ SWITCH_DECLARE(void) switch_core_memory_reclaim(void)
 #endif
 	return;
 }
-
+// 池初始化
 static void *SWITCH_THREAD_FUNC pool_thread(switch_thread_t *thread, void *obj)
 {
 	memory_manager.pool_thread_running = 1;
@@ -736,6 +736,7 @@ switch_memory_pool_t *switch_core_memory_init(void)
 	switch_threadattr_create(&thd_attr, memory_manager.memory_pool);
 
 	switch_threadattr_stacksize_set(thd_attr, SWITCH_THREAD_STACKSIZE);
+	// 新线程初始化并执行
 	switch_thread_create(&pool_thread_p, thd_attr, pool_thread, NULL, memory_manager.memory_pool);
 
 	while (!memory_manager.pool_thread_running) {

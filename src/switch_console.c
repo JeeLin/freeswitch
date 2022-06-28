@@ -1659,7 +1659,7 @@ static struct {
 	switch_hash_t *func_hash;
 	switch_mutex_t *func_mutex;
 } globals;
-
+// console初始化
 SWITCH_DECLARE(switch_status_t) switch_console_init(switch_memory_pool_t *pool)
 {
 	switch_mutex_init(&globals.func_mutex, SWITCH_MUTEX_NESTED, pool);
@@ -1681,8 +1681,8 @@ SWITCH_DECLARE(switch_status_t) switch_console_add_complete_func(const char *nam
 	switch_status_t status;
 
 	switch_mutex_lock(globals.func_mutex);
-	status = switch_core_hash_insert(globals.func_hash, name, (void *) (intptr_t) cb);
 	switch_mutex_unlock(globals.func_mutex);
+	status = switch_core_hash_insert(globals.func_hash, name, (void *) (intptr_t) cb);
 
 	return status;
 }

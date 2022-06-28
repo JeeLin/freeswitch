@@ -307,8 +307,7 @@ static void daemonize(int *fds)
 			char *o;
 			// 父进程关闭写端fds[1]
 			close(fds[1]);
-			// TODO 这个配置干啥
-			// 重试次数
+			// 重试次数 backgrouding timeout
 			if ((o = getenv("FREESWITCH_BG_TIMEOUT"))) {
 				int tmp = atoi(o);
 				if (tmp > 0) {

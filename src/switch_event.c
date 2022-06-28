@@ -687,7 +687,7 @@ SWITCH_DECLARE(void) switch_event_launch_dispatch_threads(uint32_t max)
 
 	SOFT_MAX_DISPATCH = index;
 }
-
+// TODO 事件初始化
 SWITCH_DECLARE(switch_status_t) switch_event_init(switch_memory_pool_t *pool)
 {
 
@@ -705,7 +705,7 @@ SWITCH_DECLARE(switch_status_t) switch_event_init(switch_memory_pool_t *pool)
 	switch_mutex_init(&EVENT_QUEUE_MUTEX, SWITCH_MUTEX_NESTED, RUNTIME_POOL);
 	switch_mutex_init(&CUSTOM_HASH_MUTEX, SWITCH_MUTEX_NESTED, RUNTIME_POOL);
 	switch_core_hash_init(&CUSTOM_HASH);
-
+	// 最小化启动直接退出
 	if (switch_core_test_flag(SCF_MINIMAL)) {
 		return SWITCH_STATUS_SUCCESS;
 	}

@@ -654,7 +654,7 @@ SWITCH_DECLARE(void) switch_sleep(switch_interval_time_t t)
 	do_sleep(t);
 }
 
-
+// 
 SWITCH_DECLARE(void) switch_cond_next(void)
 {
 	if (runtime.tipping_point && globals.timer_count >= runtime.tipping_point) {

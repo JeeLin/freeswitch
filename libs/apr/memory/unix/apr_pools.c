@@ -166,7 +166,7 @@ APR_DECLARE(void) apr_allocator_max_free_set(apr_allocator_t *allocator,
         apr_thread_mutex_unlock(mutex);
 #endif
 }
-
+// TODO 这在申请啥
 static APR_INLINE
 apr_memnode_t *allocator_alloc(apr_allocator_t *allocator, apr_size_t size)
 {
@@ -521,20 +521,20 @@ APR_DECLARE(void) apr_pool_mutex_set(apr_pool_t *pool,
 /*
  * Initialization
  */
-
+// 程序初始化
 APR_DECLARE(apr_status_t) apr_pool_initialize(void)
 {
     apr_status_t rv;
 
     if (apr_pools_initialized++)
         return APR_SUCCESS;
-
-    if ((rv = apr_allocator_create(&global_allocator)) != APR_SUCCESS) {
-        apr_pools_initialized = 0;
+	// TODO 初始化空间配置器
+	if ((rv = apr_allocator_create(&global_allocator)) != APR_SUCCESS) {
+		apr_pools_initialized = 0;
         return rv;
-    }
-
-    if ((rv = apr_pool_create_ex(&global_pool, NULL, NULL,
+	}
+    // global_pool 初始化
+	if ((rv = apr_pool_create_ex(&global_pool, NULL, NULL,
                                  global_allocator)) != APR_SUCCESS) {
         apr_allocator_destroy(global_allocator);
         global_allocator = NULL;
@@ -804,7 +804,7 @@ APR_DECLARE(void) apr_pool_destroy(apr_pool_t *pool)
         apr_allocator_destroy(allocator);
     }
 }
-
+// 创建内存池
 APR_DECLARE(apr_status_t) apr_pool_create_ex(apr_pool_t **newpool,
                                              apr_pool_t *parent,
                                              apr_abortfunc_t abort_fn,
@@ -814,15 +814,13 @@ APR_DECLARE(apr_status_t) apr_pool_create_ex(apr_pool_t **newpool,
     apr_memnode_t *node;
 
     *newpool = NULL;
+	// 给定默认NULL父
+	if (!parent) parent = global_pool;
+	// abort_fn 为空继承其父
+	if (!abort_fn && parent) abort_fn = parent->abort_fn;
 
-    if (!parent)
-        parent = global_pool;
-
-    if (!abort_fn && parent)
-        abort_fn = parent->abort_fn;
-
-    if (allocator == NULL) {
-        if (!parent) {
+	if (allocator == NULL) {
+		if (!parent) {
             /* There is no way to continue without an allocator when no parent */
             if (abort_fn)
                 abort_fn(APR_EINVAL);
@@ -831,9 +829,9 @@ APR_DECLARE(apr_status_t) apr_pool_create_ex(apr_pool_t **newpool,
         }
 
         allocator = parent->allocator;
-    }
+	}
 
-    if ((node = allocator_alloc(allocator,
+	if ((node = allocator_alloc(allocator,
                                 MIN_ALLOC - APR_MEMNODE_T_SIZE)) == NULL) {
         if (abort_fn)
             abort_fn(APR_ENOMEM);

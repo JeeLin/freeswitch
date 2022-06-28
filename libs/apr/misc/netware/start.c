@@ -119,12 +119,13 @@ APR_DECLARE(apr_status_t) apr_app_initialize(int *argc,
      */
     return apr_initialize();
 }
-
+// 初始化apr模块
 APR_DECLARE(apr_status_t) apr_initialize(void)
 {
     apr_pool_t *pool;
     int err;
-    void *nlmhandle = getnlmhandle();
+	// TODO 没搜到是啥
+	void *nlmhandle = getnlmhandle();
 
     /* Register the NLM as using APR. If it is already
         registered then just return. */
@@ -135,8 +136,8 @@ APR_DECLARE(apr_status_t) apr_initialize(void)
     /* apr_pool_initialize() is being called from the library
         startup code since all of the memory resources belong 
         to the library rather than the application. */
-    
-    if (apr_pool_create(&pool, NULL) != APR_SUCCESS) {
+        
+	if (apr_pool_create(&pool, NULL) != APR_SUCCESS) {
         return APR_ENOPOOL;
     }
 

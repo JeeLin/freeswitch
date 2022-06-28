@@ -111,29 +111,31 @@ int  _NonAppCheckUnload( void )
 {
     return 0;
 }
-
+// register the NLM as using APR
 int register_NLM(void *NLMHandle)
 {
-    APP_DATA *app_data = (APP_DATA*) get_app_data(gLibId);
+	// 获取信息
+	APP_DATA *app_data = (APP_DATA *)get_app_data(gLibId);
+	// 锁  初始化appData
+	NXLock(gLibLock);
+	if (!app_data) {
+		app_data = (APP_DATA *)library_malloc(gLibHandle, sizeof(APP_DATA));
 
-    NXLock(gLibLock);
-    if (!app_data) {
-        app_data = (APP_DATA*)library_malloc(gLibHandle, sizeof(APP_DATA));
-
-        if (app_data) {
-            memset (app_data, 0, sizeof(APP_DATA));
-            set_app_data(gLibId, app_data);
-            app_data->gs_nlmhandle = NLMHandle;
-        }
-    }
-
-    if (app_data && (!app_data->initialized)) {
-        app_data->initialized = 1;
+		if (app_data) {
+			memset(app_data, 0, sizeof(APP_DATA));
+			set_app_data(gLibId, app_data);
+			// 设置处理器为传入的方法
+			app_data->gs_nlmhandle = NLMHandle;
+		}
+	}
+	// 初始化中，设置为初始化完毕
+	if (app_data && (!app_data->initialized)) {
+		app_data->initialized = 1;
         NXUnlock(gLibLock);
         return 0;
-    }
+	}
 
-    NXUnlock(gLibLock);
+	NXUnlock(gLibLock);
     return 1;
 }
 

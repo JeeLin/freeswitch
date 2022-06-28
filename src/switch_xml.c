@@ -238,8 +238,8 @@ static switch_mutex_t *FILE_LOCK = NULL;
 
 SWITCH_DECLARE_NONSTD(switch_xml_t) __switch_xml_open_root(uint8_t reload, const char **err, void *user_data);
 
-static switch_xml_open_root_function_t XML_OPEN_ROOT_FUNCTION = (switch_xml_open_root_function_t)__switch_xml_open_root;
 static void *XML_OPEN_ROOT_FUNCTION_USER_DATA = NULL;
+static switch_xml_open_root_function_t XML_OPEN_ROOT_FUNCTION = (switch_xml_open_root_function_t)__switch_xml_open_root;
 
 static switch_hash_t *CACHE_HASH = NULL;
 static switch_hash_t *CACHE_EXPIRES_HASH = NULL;

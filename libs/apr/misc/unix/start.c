@@ -37,7 +37,7 @@ APR_DECLARE(apr_status_t) apr_app_initialize(int *argc,
 }
 
 static int initialized = 0;
-
+// unix 初始化apr模块
 APR_DECLARE(apr_status_t) apr_initialize(void)
 {
     apr_pool_t *pool;
@@ -48,8 +48,10 @@ APR_DECLARE(apr_status_t) apr_initialize(void)
     }
 
 #if !defined(BEOS) && !defined(OS2)
-    apr_proc_mutex_unix_setup_lock();
-    apr_unix_setup_time();
+	// {@link /freeswitch/libs/apr/locks/unix/proc_mutex.c}
+	apr_proc_mutex_unix_setup_lock();
+	// {@link /freeswitch/libs/apr/time/unix/time.c}
+	apr_unix_setup_time();
 #endif
 
     if ((status = apr_pool_initialize()) != APR_SUCCESS)

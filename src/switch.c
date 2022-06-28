@@ -258,7 +258,7 @@ static int check_fd(int fd, int ms)
 	return r;
 }
 // 进程处理
-// --ncwait时fds { 0,0 } 否则 NULL
+// --ncwait时 fds 否则 NULL
 static void daemonize(int *fds)
 {
 	int fd;
@@ -307,7 +307,8 @@ static void daemonize(int *fds)
 			char *o;
 			// 父进程关闭写端fds[1]
 			close(fds[1]);
-			// TODO 这个配置干啥的
+			// TODO 这个配置干啥
+			// 重试次数
 			if ((o = getenv("FREESWITCH_BG_TIMEOUT"))) {
 				int tmp = atoi(o);
 				if (tmp > 0) {
@@ -323,8 +324,9 @@ static void daemonize(int *fds)
 				}
 
 			} while (--sanity && system_ready == 0);
-
+			// 关闭读写与传输
 			shutdown(fds[0], 2);
+			// 关闭文件描述符
 			close(fds[0]);
 			fds[0] = -1;
 
@@ -344,6 +346,7 @@ static void daemonize(int *fds)
 	if (fds) {
 		setsid();
 	}
+	// 文件描述符 0是标准输入，1是标准输出，2是标准错误
 	/* redirect std* to null */
 	fd = open("/dev/null", O_RDONLY);
 	switch_assert( fd >= 0 );
@@ -390,22 +393,28 @@ static void reincarnate_protect(char **argv) {
 		sigaction(SIGTERM, &sa, &sa15_prev);
 		sigaction(SIGCHLD, &sa_dfl, &sa17_prev);
 	rewait:
+		// 主进程是master守护进程，在子进程死亡时重启
+		// 等待i进程 https://blog.csdn.net/Roland_Sun/article/details/32084825
+		// 如果执行成功则返回子进程识别码(PID) ,如果有错误发生则返回返回值-1。失败原因存于 errno 中。
 		r = waitpid(i, &s, 0);
 		if (r == (pid_t)-1) {
 			if (errno == EINTR) goto rewait;
 			exit(EXIT_FAILURE);
 		}
 		if (r != i) goto rewait;
+		// 判断子进程结束原因
 		if (WIFEXITED(s)
 			&& (WEXITSTATUS(s) == EXIT_SUCCESS
 				|| WEXITSTATUS(s) == EXIT_FAILURE)) {
 			exit(WEXITSTATUS(s));
 		}
+		// 若意外终止则重新拉起
 		if (WIFEXITED(s) || WIFSIGNALED(s)) {
 			sigaction(SIGILL, &sa4_prev, NULL);
 			sigaction(SIGTERM, &sa15_prev, NULL);
 			sigaction(SIGCHLD, &sa17_prev, NULL);
 			if (argv) {
+				// execv会停止执行当前的进程，并且以path应用进程替换被停止执行的进程，进程ID没有改变
 				if (argv[0] && execv(argv[0], argv) == -1) {
 					char buf[256];
 					fprintf(stderr, "Reincarnate execv() failed: %d %s\n", errno,
@@ -424,6 +433,9 @@ static void reincarnate_protect(char **argv) {
 		goto rewait;
 	} else { /* child */
 #ifdef __linux__
+		// 子进程是worker进程
+		// 以下用于父进程SIGTERM信号时避免子进程未退出
+		// https://blog.fluyy.net/post/20181208/54v7hgr0z1wu4zebhc7nr
 		prctl(PR_SET_PDEATHSIG, SIGTERM);
 #endif
 	}
@@ -587,13 +599,14 @@ int main(int argc, char *argv[])
 	// 是否不允许Fork新进程
 	switch_bool_t nf = SWITCH_FALSE;				/* TRUE if we are running in nofork mode */
 	// 系统完全初始化完毕之后再退出父进程
-	// TODO 有什么意义
+	// 保证nc后的程序初始化完毕
 	switch_bool_t do_wait = SWITCH_FALSE;
 	// 启动后以非root用户user身份运行
 	char *runas_user = NULL;
 	// 启动后以非root组group身份运行
 	char *runas_group = NULL;
-	// -reincarnate -reincarnate-reexec
+	// -reincarnate  restart the switch on an uncontrolled exit worker意外退出，master重新拉起
+	// -reincarnate-reexec run execv on a restart 重新拉起时重新执行参数配置
 	switch_bool_t reincarnate = SWITCH_FALSE, reincarnate_reexec = SWITCH_FALSE;
 	// TODO 主子进程
 	int fds[2] = { 0, 0 };
@@ -789,11 +802,8 @@ int main(int argc, char *argv[])
 		// TODO
 		else if (!strcmp(local_argv[x], "-elegant-term")) {
 			elegant_term = SWITCH_TRUE;
-		}
-		// TODO restart the switch on an uncontrolled exit
-		else if (!strcmp(local_argv[x], "-reincarnate")) {
+		} else if (!strcmp(local_argv[x], "-reincarnate")) {
 			reincarnate = SWITCH_TRUE;
-			// TODO run execv on a restart
 		} else if (!strcmp(local_argv[x], "-reincarnate-reexec")) {
 			reincarnate = SWITCH_TRUE;
 			reincarnate_reexec = SWITCH_TRUE;
@@ -1157,7 +1167,8 @@ int main(int argc, char *argv[])
 	if (do_kill) {
 		return freeswitch_kill_background();
 	}
-	// TODO 到底怎么调用的apr_initialize
+	// 初始化apr模块
+	// {@link /freeswitch/libs/apr/misc/unix/start.c}
 	if (apr_initialize() != SWITCH_STATUS_SUCCESS) {
 		fprintf(stderr, "FATAL ERROR! Could not initialize APR\n");
 		return 255;
@@ -1225,13 +1236,16 @@ int main(int argc, char *argv[])
 		FreeConsole();
 #else
 		if (!nf) {
-			// 守护进程及通信建立
+			// 切换到子进程及通信建立
 			daemonize(do_wait ? fds : NULL);
+			// 到此已切换到后台程序执行
 		}
 #endif
 	}
 #ifndef WIN32
+	// 是否拉起新worker进程
 	if (reincarnate)
+		// 执行完以下函数，切换到worker进程继续执行
 		reincarnate_protect(reincarnate_reexec ? argv : NULL);
 #endif
 
@@ -1241,12 +1255,15 @@ int main(int argc, char *argv[])
 
 	switch (priority) {
 	case 2:
+		// 设置程序优先度-10
 		set_realtime_priority();
 		break;
 	case 1:
+		// 设置程序优先度0
 		set_normal_priority();
 		break;
 	case -1:
+		// 设置程序优先度19
 		set_low_priority();
 		break;
 	default:
@@ -1258,6 +1275,7 @@ int main(int argc, char *argv[])
 
 
 #ifndef WIN32
+	// 切换运行账户
 	if (runas_user || runas_group) {
 		if (change_user_group(runas_user, runas_group) < 0) {
 			fprintf(stderr, "Failed to switch user [%s] / group [%s]\n",
@@ -1284,7 +1302,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_SUCCESS);
 	}
 #endif
-
+	// 统一处理文件夹配置
 	switch_core_set_globals();
 
 	pid = getpid();
@@ -1293,18 +1311,21 @@ int main(int argc, char *argv[])
 	switch_snprintf(pid_path, sizeof(pid_path), "%s%s%s", SWITCH_GLOBAL_dirs.run_dir, SWITCH_PATH_SEPARATOR, pfile);
 	switch_snprintf(pid_buffer, sizeof(pid_buffer), "%d", pid);
 	pid_len = strlen(pid_buffer);
-
+	// 创建内存池
+	// APR的意思是Apache可移植运行库，是Apache portable Run-time Libraries的缩写
 	apr_pool_create(&pool, NULL);
-
+	// SWITCH_FPROT_UREAD | SWITCH_FPROT_UWRITE | SWITCH_FPROT_UEXECUTE | SWITCH_FPROT_GREAD | SWITCH_FPROT_GEXECUTE
+	// 0x0400 | 0x0200| 0x0100 | 0x0040 | 0x0010 = 0x0750
+	// 创建新文件夹 权限750
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.run_dir, SWITCH_DEFAULT_DIR_PERMS, pool);
-
+	// 检查pid文件
 	if (switch_file_open(&fd, pid_path, SWITCH_FOPEN_READ, SWITCH_FPROT_UREAD | SWITCH_FPROT_UWRITE, pool) == SWITCH_STATUS_SUCCESS) {
 
 		old_pid_len = sizeof(old_pid_buffer) -1;
 		switch_file_read(fd, old_pid_buffer, &old_pid_len);
 		switch_file_close(fd);
 	}
-
+	// 打开pid文件
 	if (switch_file_open(&fd,
 						 pid_path,
 						 SWITCH_FOPEN_WRITE | SWITCH_FOPEN_CREATE | SWITCH_FOPEN_TRUNCATE,
@@ -1312,7 +1333,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Cannot open pid file %s.\n", pid_path);
 		return 255;
 	}
-
+	// pid文件读锁,允许其他读者进线程对它读，但不能有写者对它操作
 	if (switch_file_lock(fd, SWITCH_FLOCK_EXCLUSIVE | SWITCH_FLOCK_NONBLOCK) != SWITCH_STATUS_SUCCESS) {
 		fprintf(stderr, "Cannot lock pid file %s.\n", pid_path);
 		old_pid_len = strlen(old_pid_buffer);
@@ -1333,7 +1354,7 @@ int main(int argc, char *argv[])
 	if (do_wait) {
 		if (fds[1] > -1) {
 			int i, v = 1;
-
+			// 子进程通知主进程就绪 {@link daemonize(int *fds)}
 			if ((i = write(fds[1], &v, sizeof(v))) < 0) {
 				fprintf(stderr, "System Error [%s]\n", strerror(errno));
 			} else {

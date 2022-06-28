@@ -324,17 +324,23 @@ APR_DECLARE(void) apr_unix_setup_time(void)
     struct tm t;
 
     gettimeofday(&now, NULL);
-    t1 = now.tv_sec;
-    t2 = 0;
+	// 当前时间秒
+	t1 = now.tv_sec;
+	t2 = 0;
 
 #if APR_HAS_THREADS && defined(_POSIX_THREAD_SAFE_FUNCTIONS)
-    gmtime_r(&t1, &t);
+	// 获取UTC格式的时间
+	gmtime_r(&t1, &t);
 #else
     t = *gmtime(&t1);
 #endif
-    t.tm_isdst = 0; /* we know this GMT time isn't daylight-savings */
-    t2 = mktime(&t);
-    server_gmt_offset = (apr_int32_t) difftime(t1, t2);
+	// https://blog.csdn.net/duyiwuer2009/article/details/42459677
+	// tm_isdst 只是传入的时间是否是 DST(夏令时)，tm_isdst 含有：
+	// 1: 是 DST 0: 不是 DST -1: 由 mktime() 自己去判断当前系统设置是否是 DST
+	t.tm_isdst = 0; /* we know this GMT time isn't daylight-savings */
+	t2 = mktime(&t);
+	// UTC与UTC夏令时差值
+	server_gmt_offset = (apr_int32_t)difftime(t1, t2);
 #endif /* NO_GMTOFF_IN_STRUCT_TM */
 }
 

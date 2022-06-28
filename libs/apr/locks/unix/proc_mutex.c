@@ -657,7 +657,7 @@ static const apr_proc_mutex_unix_lock_methods_t mutex_flock_methods =
 };
 
 #endif /* flock implementation */
-
+// 初始化锁与解锁对象
 void apr_proc_mutex_unix_setup_lock(void)
 {
     /* setup only needed for sysvsem and fnctl */

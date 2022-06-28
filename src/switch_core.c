@@ -911,6 +911,7 @@ SWITCH_DECLARE(void) switch_core_set_globals(void)
 // 设置进程权限
 SWITCH_DECLARE(int32_t) switch_core_set_process_privileges(void)
 {
+// Oracle Solaris操作系统
 #ifdef SOLARIS_PRIVILEGES
 	priv_set_t *basicset;
 
@@ -954,13 +955,14 @@ SWITCH_DECLARE(int32_t) set_low_priority(void)
 	 * Try to use a normal scheduler
 	 */
 	struct sched_param sched = { 0 };
-	sched.sched_priority = 0;
-	if (sched_setscheduler(0, SCHED_OTHER, &sched) < 0) {
+	.sched_priority = 0;
+	sched if (sched_setscheduler(0, SCHED_OTHER, &sched) < 0)
+	{
 		fprintf(stderr, "ERROR: Failed to set SCHED_OTHER scheduler (%s)\n", strerror(errno));
 		return -1;
 	}
 #endif
-// TODO
+
 #ifdef HAVE_SETPRIORITY
 	/*
 	 * setpriority() works on FreeBSD (6.2), nice() doesn't
@@ -1044,6 +1046,7 @@ SWITCH_DECLARE(int32_t) set_realtime_priority(void)
 		return -1;
 	}
 #else
+	// 修改进程优先级为-10
 	if (nice(-10) != -10) {
 		fprintf(stderr, "ERROR: Could not set nice level\n");
 		return -1;
@@ -1844,7 +1847,7 @@ SWITCH_DECLARE(int) switch_core_test_flag(int flag)
 	return switch_test_flag((&runtime), flag);
 }
 
-
+// 核心初始化
 SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switch_bool_t console, const char **err)
 {
 	switch_uuid_t uuid;
@@ -1859,6 +1862,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 	}
 
 	memset(&runtime, 0, sizeof(runtime));
+	// 获取主机名
 	gethostname(runtime.hostname, sizeof(runtime.hostname));
 
 	runtime.shutdown_cause = SWITCH_CAUSE_SYSTEM_SHUTDOWN;
@@ -1888,6 +1892,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 	}
 	runtime.mailer_app = "sendmail";
 	runtime.mailer_app_args = "-t";
+	// dtmf配置
 	runtime.max_dtmf_duration = SWITCH_MAX_DTMF_DURATION;
 	runtime.default_dtmf_duration = SWITCH_DEFAULT_DTMF_DURATION;
 	runtime.min_dtmf_duration = SWITCH_MIN_DTMF_DURATION;
@@ -1904,7 +1909,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 #endif
 
 	if (!runtime.cpu_count) runtime.cpu_count = 1;
-
+	// SQLite是一个进程内的库，实现了自给自足的、无服务器的、零配置的、事务性的 SQL 数据库引擎。
 	if (sqlite3_initialize() != SQLITE_OK) {
 		*err = "FATAL ERROR! Could not initialize SQLite\n";
 		return SWITCH_STATUS_MEMERR;
@@ -1921,7 +1926,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 		return SWITCH_STATUS_MEMERR;
 	}
 	switch_assert(runtime.memory_pool != NULL);
-
+	// 创建文件夹
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.base_dir, SWITCH_DEFAULT_DIR_PERMS, runtime.memory_pool);
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.mod_dir, SWITCH_DEFAULT_DIR_PERMS, runtime.memory_pool);
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.conf_dir, SWITCH_DEFAULT_DIR_PERMS, runtime.memory_pool);
@@ -1937,7 +1942,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.sounds_dir, SWITCH_DEFAULT_DIR_PERMS, runtime.memory_pool);
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.temp_dir, SWITCH_DEFAULT_DIR_PERMS, runtime.memory_pool);
 	switch_dir_make_recursive(SWITCH_GLOBAL_dirs.certs_dir, SWITCH_DEFAULT_DIR_PERMS, runtime.memory_pool);
-
+	// 初始化互斥锁
 	switch_mutex_init(&runtime.uuid_mutex, SWITCH_MUTEX_NESTED, runtime.memory_pool);
 
 	switch_mutex_init(&runtime.throttle_mutex, SWITCH_MUTEX_NESTED, runtime.memory_pool);
@@ -1961,7 +1966,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 	if (console) {
 		runtime.console = stdout;
 	}
-
+	// 为SSL加载加密和哈希算法
 	SSL_library_init();
 	switch_ssl_init_ssl_locks();
 	OpenSSL_add_all_algorithms();
@@ -2001,7 +2006,7 @@ SWITCH_DECLARE(switch_status_t) switch_core_init(switch_core_flag_t flags, switc
 #endif
 	switch_console_init(runtime.memory_pool);
 	switch_event_init(runtime.memory_pool);
-	switch_channel_global_init(runtime.memory_pool);
+	switch_channel_gloobal_init(runtime.memory_pool);
 
 	if (switch_xml_init(runtime.memory_pool, err) != SWITCH_STATUS_SUCCESS) {
 		/* allow missing configuration if MINIMAL */
@@ -3335,7 +3340,7 @@ SWITCH_DECLARE(pid_t) switch_fork(void)
 SWITCH_DECLARE(pid_t) switch_fork(void)
 {
 	int i = fork();
-	// 减低子进程优先度
+	// 减低子进程有限度
 	if (!i) {
 		set_low_priority();
 	}

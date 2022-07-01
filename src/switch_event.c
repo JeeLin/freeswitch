@@ -687,7 +687,7 @@ SWITCH_DECLARE(void) switch_event_launch_dispatch_threads(uint32_t max)
 
 	SOFT_MAX_DISPATCH = index;
 }
-// TODO 事件初始化
+// TODO 事件核心初始化
 SWITCH_DECLARE(switch_status_t) switch_event_init(switch_memory_pool_t *pool)
 {
 

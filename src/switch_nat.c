@@ -395,7 +395,7 @@ SWITCH_DECLARE(void) switch_nat_thread_stop(void)
 	nat_thread_p = NULL;
 }
 
-
+// TODO nat初始化
 SWITCH_DECLARE(void) switch_nat_init(switch_memory_pool_t *pool, switch_bool_t mapping)
 {
 	/* try free dynamic data structures prior to resetting to 0 */

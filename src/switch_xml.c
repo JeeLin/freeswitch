@@ -232,6 +232,7 @@ struct switch_xml_binding {
 
 
 static switch_xml_binding_t *BINDINGS = NULL;
+// 最终的xml配置对象
 static switch_xml_t MAIN_XML_ROOT = NULL;
 static switch_memory_pool_t *XML_MEMORY_POOL = NULL;
 
@@ -1244,7 +1245,7 @@ SWITCH_DECLARE(switch_xml_t) switch_xml_parse_fd(int fd)
 	}
 
 	m = switch_must_malloc(st.st_size);
-
+	// 读取整合后的配置，解析
 	if (!(0<(l = read(fd, m, st.st_size)))
 		|| !(root = (switch_xml_root_t) switch_xml_parse_str((char *) m, l))) {
 		free(m);
@@ -1299,9 +1300,8 @@ static char *expand_vars(char *buf, char *ebuf, switch_size_t elen, switch_size_
 
 	*wp++ = '\0';
 	*newlen = strlen(ebuf);
-
-	return ebuf;
 }
+return ebuf;
 
 static FILE *preprocess_exec(const char *cwd, const char *command, FILE *write_fd, int rlevel)
 {
@@ -1365,7 +1365,7 @@ static FILE *preprocess_exec(const char *cwd, const char *command, FILE *write_f
 	return write_fd;
 
 }
-
+// 预编译指定块，即引入的新文件
 static FILE *preprocess_glob(const char *cwd, const char *pattern, FILE *write_fd, int rlevel)
 {
 	char *full_path = NULL;
@@ -1387,16 +1387,14 @@ static FILE *preprocess_glob(const char *cwd, const char *pattern, FILE *write_f
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "No files to include at %s\n", pattern);
 		goto end;
 	}
-
+	// 引入的文件夹或文件嵌套预编译
 	for (n = 0; n < glob_data.gl_pathc; ++n) {
 		dir_path = switch_must_strdup(glob_data.gl_pathv[n]);
 
-		if ((e = strrchr(dir_path, *SWITCH_PATH_SEPARATOR))) {
-			*e = '\0';
-		}
-		// 嵌套预编译
+		if ((e = strrchr(dir_path, *SWITCH_PATH_SEPARATOR))) { *e = '\0'; }
 		if (preprocess(dir_path, glob_data.gl_pathv[n], write_fd, rlevel) < 0) {
 			if (rlevel > 100) {
+				// 嵌套循环不能超过100
 				switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Error including %s (Maximum recursion limit reached)\n", pattern);
 			}
 		}
@@ -1415,6 +1413,7 @@ static FILE *preprocess_glob(const char *cwd, const char *pattern, FILE *write_f
 static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rlevel)
 {
 	FILE *read_fd = NULL;
+	// ml 为上一行是否有注释前置 <!--# 的标识
 	switch_size_t cur = 0, ml = 0;
 	char *q, *cmd, *buf = NULL, *ebuf = NULL;
 	char *tcmd, *targ;
@@ -1555,6 +1554,7 @@ static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rle
 				// stun网络协议相关配置修改
 				preprocess_stun_set(targ);
 			} else if (!strcasecmp(tcmd, "env-set")) {
+				// X-pre-process 允许环境变量获取
 				// value可以读取环境变量 ${}
 				preprocess_env_set(targ);
 			} else if (!strcasecmp(tcmd, "include")) {
@@ -1567,7 +1567,7 @@ static int preprocess(const char *cwd, const char *file, FILE *write_fd, int rle
 
 			continue;
 		}
-
+		// 注释
 		if ((cmd = strstr(bp, "<!--#"))) {
 			if (fwrite(bp, 1, (unsigned) (cmd - bp), write_fd) != (unsigned) (cmd - bp)) {
 				switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Short write!\n");
@@ -1705,15 +1705,14 @@ SWITCH_DECLARE(switch_xml_t) switch_xml_parse_file(const char *file)
 	}
 
 	setvbuf(write_fd, (char *) NULL, _IOFBF, 65536);
-
+	// 预编译、整合配置xml
 	if (preprocess(SWITCH_GLOBAL_dirs.conf_dir, file, write_fd, 0) > -1) {
 		fclose(write_fd);
 		write_fd = NULL;
-		unlink (new_file);
-
-		if ( rename(new_file_tmp,new_file) ) {
-			goto done;
-		}
+		// 删除文件临时fsxml文件
+		unlink(new_file);
+		// 修改文件名成功则返回0，否则返回-1。
+		if (rename(new_file_tmp, new_file)) { goto done; }
 		if ((fd = open(new_file, O_RDONLY, 0)) > -1) {
 			if ((xml = switch_xml_parse_fd(fd))) {
 				if (strcmp(abs, SWITCH_GLOBAL_filenames.conf_name)) {
@@ -2360,20 +2359,25 @@ SWITCH_DECLARE(switch_status_t) switch_xml_set_open_root_function(switch_xml_ope
 }
 
 SWITCH_DECLARE(switch_xml_t) switch_xml_open_root(uint8_t reload, const char **err)
-{
+{	
+	// 获取的xml对象
 	switch_xml_t root = NULL;
 	switch_event_t *event;
 
 	switch_mutex_lock(XML_LOCK);
 
 	if (XML_OPEN_ROOT_FUNCTION) {
+		// TODO 配置已加载且reload为0 或 加载配置未出现错误时 会返回对象
 		root = XML_OPEN_ROOT_FUNCTION(reload, err, XML_OPEN_ROOT_FUNCTION_USER_DATA);
 	}
 	switch_mutex_unlock(XML_LOCK);
 
 
 	if (root) {
+		// {@link /freeswitch/src/switch_event.c#switch_event_create_subclass_detailed}
+		// 创建reloadxml事件
 		if (switch_event_create(&event, SWITCH_EVENT_RELOADXML) == SWITCH_STATUS_SUCCESS) {
+			// TODO 事件分发
 			if (switch_event_fire(&event) != SWITCH_STATUS_SUCCESS) {
 				switch_event_destroy(&event);
 			}
@@ -2387,10 +2391,11 @@ SWITCH_DECLARE_NONSTD(switch_xml_t) __switch_xml_open_root(uint8_t reload, const
 {
 	char path_buf[1024];
 	uint8_t errcnt = 0;
+	// 预编译、整合后的xml配置对象
 	switch_xml_t new_main, r = NULL;
 
 	if (MAIN_XML_ROOT) {
-		// TODO xml reload
+		// xml not reload
 		if (!reload) {
 			r = switch_xml_root();
 			goto done;
@@ -3450,7 +3455,7 @@ static int match(char *, char *, char *);
 
 #pragma warning(push)
 #pragma warning(disable:4310)
-
+// TODO 这里是读取文件夹里的文件名称信息吗
 int glob(const char *pattern, int flags, int (*errfunc) (const char *, int), glob_t *pglob)
 {
 	const unsigned char *patnext;

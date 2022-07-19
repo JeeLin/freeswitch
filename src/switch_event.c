@@ -134,6 +134,7 @@ static void free_header(switch_event_header_t **header);
 /* make sure this is synced with the switch_event_types_t enum in switch_types.h
    also never put any new ones before EVENT_ALL
 */
+// Event 类型枚举
 static char *EVENT_NAMES[] = {
 	"CUSTOM",
 	"CLONE",

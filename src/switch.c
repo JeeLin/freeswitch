@@ -798,7 +798,7 @@ int main(int argc, char *argv[])
 		else if (!strcmp(local_argv[x], "-nf")) {
 			nf = SWITCH_TRUE;
 		}
-		// TODO
+		// 优雅结束，退出时会等待当前通话结束
 		else if (!strcmp(local_argv[x], "-elegant-term")) {
 			elegant_term = SWITCH_TRUE;
 		} else if (!strcmp(local_argv[x], "-reincarnate")) {
